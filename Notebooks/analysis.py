@@ -4,6 +4,9 @@ def analyze_data (file_path):
     #Load the CSV into a DataFrame
     df=pd.read_csv(file_path)
 
+    #Fix the date column 
+    df['Order Date'] =pd.to_datetime(df["Order Date"])
+
     #How big is the dataset?
     print("Shape:", df.shape)
     #shape returns (rows,columns) as a tuple
@@ -39,6 +42,18 @@ def analyze_data (file_path):
     print(df.describe())
     #Shows count, mean,std, min, max, percentiles
     #Quick way to spot outliers -if max is 10x the mean, investigate
+
+    # print(df["Order Date"].dt.year)
+    # print(df["Order Date"].dt.month)
+    # print(df["Order Date"].dt.day_name())
+    print("Years:",df["Order Date"].dt.year.unique())
+    print("Date Range:",df["Order Date"].min(),"to",df['Order Date'].max())
+    #Which category makes the most money?
+    print(df.groupby('Category')['Sales'].sum())
+    #Which category is most profitable?
+    print(df.groupby('Category')['Profit'].sum())
+    #Which category is more efficient at turning sales into profit?
+    print(df.groupby('Category')[['Sales','Profit']].sum())
 
 if __name__ == "__main__":
     analyze_data("Data/raw/ecommerce_sales_data.csv")
