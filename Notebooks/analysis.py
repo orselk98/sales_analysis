@@ -55,5 +55,13 @@ def analyze_data (file_path):
     #Which category is more efficient at turning sales into profit?
     print(df.groupby('Category')[['Sales','Profit']].sum())
 
+    category_summary=df.groupby('Category')[['Sales','Profit']].sum()
+    category_summary['Margin']=category_summary['Profit']/category_summary['Sales']
+    print(category_summary)
+
+    region_summary=df.groupby('Region')[['Sales','Profit']].sum()
+    region_summary['Margin']=region_summary['Profit']/region_summary['Sales']
+    print(region_summary)
+
 if __name__ == "__main__":
     analyze_data("Data/raw/ecommerce_sales_data.csv")
