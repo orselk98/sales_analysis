@@ -63,5 +63,17 @@ def analyze_data (file_path):
     region_summary['Margin']=region_summary['Profit']/region_summary['Sales']
     print(region_summary)
 
+    product_summary=df.groupby('Product Name')[['Sales','Profit']].sum().sort_values(by='Sales', ascending=False)
+    print(product_summary.head(10))
+
+    date_summary=df.groupby(df['Order Date'].dt.year)[['Sales']].sum()
+    print(date_summary)
+    
+    df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
+    df.info()
+    
+
+
+
 if __name__ == "__main__":
     analyze_data("Data/raw/ecommerce_sales_data.csv")
