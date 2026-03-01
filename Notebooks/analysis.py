@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def analyze_data (file_path):
     #Load the CSV into a DataFrame
@@ -69,6 +70,35 @@ def analyze_data (file_path):
     date_summary=df.groupby(df['Order Date'].dt.year)[['Sales']].sum()
     print(date_summary)
     
+    df['Year-Month']=df['Order Date'].dt.to_period('M')
+    monthly_summary=df.groupby('Year-Month')[['Sales']].sum()
+    print(monthly_summary)
+    monthly_summary.plot(kind='line')
+    plt.title("Monthly Sales Over Time")
+    plt.ylabel("Total Sales")
+    plt.xlabel("Month")
+    plt.tight_layout()
+    plt.savefig('Output/monthly_sales_trend.png')
+    plt.show()
+
+    category_sales = df.groupby('Category')['Sales'].sum()
+    category_sales.plot(kind='bar', color=['steelblue', 'salmon', 'lightgreen'])
+    plt.title("Total Sales by Category")
+    plt.ylabel("Total Sales ($)")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig('Output/category_sales.png')
+    plt.show()
+
+    sales_by_region=df.groupby('Region')['Sales'].sum()
+    sales_by_region.plot(kind='bar', color=['steelblue', 'salmon', 'lightgreen'])
+    plt.title("Total Sales By Region")
+    plt.ylabel("Total Sales ($)")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig('Output/region_sales.png')
+    plt.show()
+
     df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
     df.info()
     
