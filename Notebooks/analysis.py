@@ -1,17 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def analyze_data (file_path):
-    #Load the CSV into a DataFrame
-    df=pd.read_csv(file_path)
 
-    #Fix the date column 
-    df['Order Date'] =pd.to_datetime(df["Order Date"])
-
+def inspect_data(df):
     #How big is the dataset?
     print("Shape:", df.shape)
     #shape returns (rows,columns) as a tuple
-    #Example :(1000,12) means 1000 trn,12 columns 
+    #Example :(1000,12) means 1000 trn,12 columns
 
     #2 What coulmns do we have?
     print("\nCoumn Names:")
@@ -24,31 +19,31 @@ def analyze_data (file_path):
     print(df.dtypes)
     #This tells ypu if pandas sees a column as numbers (int64,float64),
     #text (object), dates (datetime64), etc.
-    #It is important because wrong types cause bugs later 
+    #It is important because wrong types cause bugs later
 
-    #4.Full summary -combines shape, types and null counts 
+    #4.Full summary -combines shape, types and null counts
     print("\nDataset Info:")
     print(df.info())
-    #This shows non-null counts -if a column has fever non-null values 
+    #This shows non-null counts -if a column has fever non-null values
     #than total rows , you have missing data
 
     #5.Actually look at the data
     print("\nFirst 5 Rows:")
     print(df.head())
-    #ALWAYS eyeball your data. Numbers and summaries don't catch 
-    #everything - sometimes you spot weird values just by looking 
+    #ALWAYS eyeball your data. Numbers and summaries don't catch
+    #everything - sometimes you spot weird values just by looking
 
-    #6. Statistical summary of numeric columns 
+    #6. Statistical summary of numeric columns
     print("\nSummary Statistics :")
     print(df.describe())
     #Shows count, mean,std, min, max, percentiles
     #Quick way to spot outliers -if max is 10x the mean, investigate
 
-    # print(df["Order Date"].dt.year)
-    # print(df["Order Date"].dt.month)
-    # print(df["Order Date"].dt.day_name())
     print("Years:",df["Order Date"].dt.year.unique())
     print("Date Range:",df["Order Date"].min(),"to",df['Order Date'].max())
+
+
+def analyze_data(df):
     #Which category makes the most money?
     print(df.groupby('Category')['Sales'].sum())
     #Which category is most profitable?
@@ -69,10 +64,36 @@ def analyze_data (file_path):
 
     date_summary=df.groupby(df['Order Date'].dt.year)[['Sales']].sum()
     print(date_summary)
-    
+
     df['Year-Month']=df['Order Date'].dt.to_period('M')
     monthly_summary=df.groupby('Year-Month')[['Sales']].sum()
     print(monthly_summary)
+
+    print("-"*40)
+    filter_by_sales=df[df['Sales']>5000]
+    print(filter_by_sales.head())
+    print(filter_by_sales.shape)
+
+    print("-"*40)
+
+    filter_by_sales_category=df[(df['Sales']>5000) & (df['Category']=='Electronics')]
+    print(filter_by_sales_category)
+    print(filter_by_sales_category.shape)
+
+    print("-"*40)
+
+    filter_by_north_or_east=df[(df['Region']=='North') | (df['Region']=='West')]
+    print(filter_by_north_or_east)
+    print(filter_by_north_or_east.shape)
+
+    df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
+
+    return df
+
+
+def plot_charts(df):
+    df['Year-Month']=df['Order Date'].dt.to_period('M')
+    monthly_summary=df.groupby('Year-Month')[['Sales']].sum()
     monthly_summary.plot(kind='line')
     plt.title("Monthly Sales Over Time")
     plt.ylabel("Total Sales")
@@ -99,11 +120,11 @@ def analyze_data (file_path):
     plt.savefig('Output/region_sales.png')
     plt.show()
 
-    df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
-    df.info()
-    
-
-
 
 if __name__ == "__main__":
-    analyze_data("Data/raw/ecommerce_sales_data.csv")
+    df = pd.read_csv("Data/raw/ecommerce_sales_data.csv")
+    df['Order Date'] = pd.to_datetime(df["Order Date"])
+
+    #inspect_data(df)
+    df = analyze_data(df)
+    #plot_charts(df)
