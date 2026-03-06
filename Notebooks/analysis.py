@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def inspect_data(df):
@@ -86,6 +87,26 @@ def analyze_data(df):
     print(filter_by_north_or_east)
     print(filter_by_north_or_east.shape)
 
+    print("-"*40)
+
+    filter_camera_laptop_tablet=df[df['Product Name'].isin(['Camera','Laptop','Tablet'])]
+    print(filter_camera_laptop_tablet.head())
+    print(filter_camera_laptop_tablet.shape)
+    print("-"*40)
+    print(df.head())
+    df['Margin Level']=np.where(df['Profit Margin']>0.2,'High','Low')
+    print(df['Margin Level'].value_counts())
+
+    print("-"*40)
+    #Which categories have the most high-margin transactions? 
+    filter_high_margin_trn=df[df['Margin Level']=='High'].groupby('Category').size()
+    print(filter_high_margin_trn)
+    print("-"*40)
+    # What percentage of each category's transactions are high margin?
+    total=df.groupby('Category').size()
+    high=df[df['Margin Level']=='High'].groupby('Category').size()
+    print(high/total)
+
     df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
 
     return df
@@ -124,6 +145,7 @@ def plot_charts(df):
 if __name__ == "__main__":
     df = pd.read_csv("Data/raw/ecommerce_sales_data.csv")
     df['Order Date'] = pd.to_datetime(df["Order Date"])
+    df['Profit Margin'] = df['Profit']/df['Sales']
 
     #inspect_data(df)
     df = analyze_data(df)
