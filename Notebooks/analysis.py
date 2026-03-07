@@ -109,7 +109,22 @@ def analyze_data(df):
     high=df[df['Margin Level']=='High'].groupby('Category').size()
     print(high/total)
 
+    print(df.pivot_table(values='Sales',index='Category',columns='Region',aggfunc='mean'))
+    print(df.pivot_table(values='Sales',index='Category',columns='Region',aggfunc='count'))
+    pivot=df.pivot_table(
+            values='Sales',
+            index='Category',
+            columns='Region',
+            aggfunc=['mean','sum','count']
+        )
+    print(pivot)
+    pivot.to_excel("Data/processed/pivot_summary.xlsx", sheet_name="Pivot Summary", index=True)
     df.to_excel("Data/processed/ecommerce_summary.xlsx", sheet_name="Summary", index=True)
+
+    #cross tabulation 
+    print(pd.crosstab(df['Category'], df['Region']))
+    print(pd.crosstab(df['Category'], df['Region'],normalize='index'))
+    print(pd.crosstab(df['Category'], df['Region'],normalize='columns'))
 
     return df
 
@@ -190,7 +205,7 @@ def plot_charts(df):
     plt.subplots_adjust(hspace=0.4, wspace=0.3)
     plt.savefig('Output/2x2grid.png')
     plt.show()
-"""
+
     pivot=df.pivot_table(values='Sales', index='Category', columns='Region', aggfunc='sum')
     fig,ax=plt.subplots(figsize=(10,6))
     sns.heatmap(pivot,annot=True,fmt=',.0f',cmap='Blues',ax=ax)
@@ -206,13 +221,13 @@ def plot_charts(df):
     plt.tight_layout()
     plt.savefig('Output/profit_heatmap.png')
     plt.show()
-
-
+        """
+    
 if __name__ == "__main__":
     df = pd.read_csv("Data/raw/ecommerce_sales_data.csv")
     df['Order Date'] = pd.to_datetime(df["Order Date"])
     df['Profit Margin'] = df['Profit']/df['Sales']
 
     #inspect_data(df)
-    #df = analyze_data(df)
-    plot_charts(df)
+    df = analyze_data(df)
+    #plot_charts(df)
