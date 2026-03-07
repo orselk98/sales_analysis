@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 
 
@@ -114,6 +115,7 @@ def analyze_data(df):
 
 
 def plot_charts(df):
+    """
     df['Year-Month']=df['Order Date'].dt.to_period('M')
     monthly_summary=df.groupby('Year-Month')[['Sales']].sum()
     monthly_summary.plot(kind='line')
@@ -142,6 +144,8 @@ def plot_charts(df):
     plt.savefig('Output/region_sales.png')
     plt.show()
 
+#----------------------------------Advanced Visualisations
+
     fig, axes=plt.subplots(nrows=1,ncols=2, figsize=(14,5))
 
     category_data=df.groupby('Category')[['Sales','Profit']].sum()
@@ -156,6 +160,51 @@ def plot_charts(df):
 
     plt.tight_layout()
     plt.savefig('Output/category_sales_profit.png')
+    plt.show()
+
+#----------------------------------2x2 grid of charts
+
+    fig,axes=plt.subplots(nrows=2,ncols=2, figsize=(14,10))
+    
+    cat_data=df.groupby('Category')[['Sales','Profit']].sum()
+    
+    cat_data['Sales'].plot(kind='bar',ax=axes[0,0])
+    axes[0,0].set_title('Sales By Category')
+    axes[0,0].tick_params(axis='x',rotation=0)
+
+    cat_data['Profit'].plot(kind='bar',ax=axes[0,1])
+    axes[0,1].set_title('Profit by Category')
+    axes[0,1].tick_params(axis='x',rotation=0)
+
+    reg_data=df.groupby('Region')[['Sales']].sum()
+
+    reg_data['Sales'].plot(kind='bar',ax=axes[1,0])
+    axes[1,0].set_title('Sales by Region')
+    axes[1,0].tick_params(axis='x',rotation=0)
+
+    monthly_sales=df.groupby('Year-Month')[['Sales']].sum()
+
+    monthly_sales['Sales'].plot(kind='line',ax=axes[1,1])
+    axes[1,1].set_title('Monthly Sales Trend')
+
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
+    plt.savefig('Output/2x2grid.png')
+    plt.show()
+"""
+    pivot=df.pivot_table(values='Sales', index='Category', columns='Region', aggfunc='sum')
+    fig,ax=plt.subplots(figsize=(10,6))
+    sns.heatmap(pivot,annot=True,fmt=',.0f',cmap='Blues',ax=ax)
+    ax.set_title('Sales by Category and Region')
+    plt.tight_layout()
+    plt.savefig('Output/sales_heatmap.png')
+    plt.show()
+
+    pivot1=df.pivot_table(values='Profit', index='Category',columns='Region', aggfunc='sum')
+    fig,ax=plt.subplots(figsize=(10,6))
+    sns.heatmap(pivot1,annot=True,fmt=',.0f',cmap='Greens',ax=ax)
+    ax.set_title('Profit by Category and Region')
+    plt.tight_layout()
+    plt.savefig('Output/profit_heatmap.png')
     plt.show()
 
 
