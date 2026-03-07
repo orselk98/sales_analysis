@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+
 def inspect_data(df):
     #How big is the dataset?
     print("Shape:", df.shape)
@@ -141,6 +142,22 @@ def plot_charts(df):
     plt.savefig('Output/region_sales.png')
     plt.show()
 
+    fig, axes=plt.subplots(nrows=1,ncols=2, figsize=(14,5))
+
+    category_data=df.groupby('Category')[['Sales','Profit']].sum()
+
+    category_data['Sales'].plot(kind='bar',ax=axes[0]) 
+    axes[0].set_title("Total Sales by Category")
+    axes[0].tick_params(axis='x', rotation=0)
+
+    category_data['Profit'].plot(kind='bar',ax=axes[1])
+    axes[1].set_title('Profit by Category')
+    axes[1].tick_params(axis='x', rotation=0)
+
+    plt.tight_layout()
+    plt.savefig('Output/category_sales_profit.png')
+    plt.show()
+
 
 if __name__ == "__main__":
     df = pd.read_csv("Data/raw/ecommerce_sales_data.csv")
@@ -148,5 +165,5 @@ if __name__ == "__main__":
     df['Profit Margin'] = df['Profit']/df['Sales']
 
     #inspect_data(df)
-    df = analyze_data(df)
-    #plot_charts(df)
+    #df = analyze_data(df)
+    plot_charts(df)
